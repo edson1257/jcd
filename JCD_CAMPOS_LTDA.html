@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Equipamentos</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        header { background: #35424a; color: #ffffff; padding: 20px 0; text-align: center; }
+        nav a { margin: 0 15px; color: #ffffff; text-decoration: none; padding: 10px 20px; background: #5c6bc0; border-radius: 5px; }
+        nav a:hover { background: #7986cb; }
+        section { display: none; padding: 20px; margin: 20px; background: #ffffff; border-radius: 5px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
+        footer { text-align: center; padding: 15px 0; background: #35424a; color: #ffffff; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input[type="text"], input[type="number"], textarea, input[type="submit"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        input[type="submit"] { background: #5c6bc0; color: white; cursor: pointer; border: none; }
+        input[type="submit"]:hover { background: #7986cb; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #35424a; color: white; }
+        .home { text-align: center; margin-top: 50px; }
+        .home h2 { margin-bottom: 20px; }
+        .home button { padding: 10px 20px; font-size: 16px; background: #5c6bc0; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .home button:hover { background: #7986cb; }
+        .btn { padding: 5px 10px; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        .edit { background: #ffa500; }
+        .delete { background: #f44336; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<header>
+    <h1>EQUIPAMENTOS DA JCD CAMPOS LTDA</h1>
+    <nav>
+        <a href="#" onclick="showSection('home')">Início</a>
+        <a href="#" onclick="showSection('cadastrar')">Cadastrar Equipamento</a>
+        <a href="#" onclick="showSection('pesquisar')">Pesquisar Equipamento</a>
+        <a href="#" onclick="showSection('lista')">Consultar Lista Geral</a>
+    </nav>
+</header>
+
+<section id="home">
+    <div class="home">
+        <h2>Bem-vindo ao Controle de Equipamentos</h2>
+        <button onclick="showSection('cadastrar')">Começar</button>
+    </div>
+</section>
+
+<section id="cadastrar">
+    <h2>Cadastrar Equipamento</h2>
+    <form id="equipamentoForm">
+        <div class="form-group">
+            <label for="nome">Nome do Equipamento:</label>
+            <input type="text" id="nome" name="nome" required>
+        </div>
+        <div class="form-group">
+            <label for="marca">Marca:</label>
+            <input type="text" id="marca" name="marca" required>
+        </div>
+        <div class="form-group">
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" id="quantidade" name="quantidade" required>
+        </div>
+        <div class="form-group">
+            <label for="numeroSerie">Número de Série:</label>
+            <input type="text" id="numeroSerie" name="numeroSerie" required>
+        </div>
+        <div class="form-group">
+            <label for="marcaEmpresa">Marca da Empresa:</label>
+            <input type="text" id="marcaEmpresa" name="marcaEmpresa" required>
+        </div>
+        <div class="form-group">
+            <label for="situacao">Situação:</label>
+            <input type="text" id="situacao" name="situacao" required>
+        </div>
+        <div class="form-group">
+            <label for="condicao">Condição:</label>
+            <input type="text" id="condicao" name="condicao" required>
+        </div>
+        <div class="form-group">
+            <label for="observacoes">Observações:</label>
+            <textarea id="observacoes" name="observacoes" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="nomeObra">Nome da Obra:</label>
+            <input type="text" id="nomeObra" name="nomeObra" required>
+        </div>
+        <input type="submit" value="Cadastrar">
+    </form>
+    <p id="message"></p>
+</section>
+
+<section id="pesquisar">
+    <h2>Pesquisar Equipamento</h2>
+    <form id="pesquisaForm">
+        <div class="form-group">
+            <label for="pesquisa">Nome do Equipamento:</label>
+            <input type="text" id="pesquisa" name="pesquisa" required>
+        </div>
+        <input type="submit" value="Pesquisar">
+    </form>
+    <table id="searchResults" style="display:none;">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Marca</th>
+                <th>Quantidade</th>
+                <th>Número de Série</th>
+                <th>Marca da Empresa</th>
+                <th>Situação</th>
+                <th>Condição</th>
+                <th>Observações</th>
+                <th>Nome da Obra</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</section>
+
+<section id="lista">
+    <h2>Consultar Lista Geral</h2>
+    <table id="equipmentList">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Marca</th>
+                <th>Quantidade</th>
+                <th>Número de Série</th>
+                <th>Marca da Empresa</th>
+                <th>Situação</th>
+                <th>Condição</th>
+                <th>Observações</th>
+                <th>Nome da Obra</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <button id="exportButton">Exportar para XLSX</button>
+</section>
+
+<footer>
+    <p>&copy; 2024 JCD CAMPOS LTDA - "CADA DIA É UMA NOVA OPORTUNIDADE PARA RECOMÇAR E FAZER DIFERENTE".</p>
+</footer>
+
+<script>
+    const form = document.getElementById('equipamentoForm');
+    const message = document.getElementById('message');
+    const searchForm = document.getElementById('pesquisaForm');
+    const searchResults = document.getElementById('searchResults').getElementsByTagName('tbody')[0];
+    const equipmentList = document.getElementById('equipmentList').getElementsByTagName('tbody')[0];
+    const exportButton = document.getElementById('exportButton');
+    
+    let equipamentos = JSON.parse(localStorage.getItem('equipamentos')) || [];
+
+    function showSection(sectionId) {
+        document.querySelectorAll('section').forEach(section => {
+            section.style.display = 'none';
+        });
+        document.getElementById(sectionId).style.display = 'block';
+
+        if (sectionId === 'lista') {
+            atualizarLista();
+        }
+    }
+
+    showSection('home');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const nome = document.getElementById('nome').value;
+        const marca = document.getElementById('marca').value;
+        const quantidade = document.getElementById('quantidade').value;
+        const numeroSerie = document.getElementById('numeroSerie').value;
+        const marcaEmpresa = document.getElementById('marcaEmpresa').value;
+        const situacao = document.getElementById('situacao').value;
+        const condicao = document.getElementById('condicao').value;
+        const observacoes = document.getElementById('observacoes').value;
+        const nomeObra = document.getElementById('nomeObra').value;
+
+        equipamentos.push({ nome, marca, quantidade, numeroSerie, marcaEmpresa, situacao, condicao, observacoes, nomeObra });
+        localStorage.setItem('equipamentos', JSON.stringify(equipamentos));
+
+        message.textContent = 'Equipamento cadastrado com sucesso!';
+        form.reset();
+    });
+
+    searchForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const pesquisa = document.getElementById('pesquisa').value.toLowerCase();
+        searchResults.innerHTML = '';
+        searchResults.parentElement.style.display = 'table';
+
+        const resultados = equipamentos.filter(e => e.nome.toLowerCase().includes(pesquisa));
+
+        if (resultados.length > 0) {
+            resultados.forEach((e, index) => {
+                const row = searchResults.insertRow();
+                row.insertCell(0).textContent = e.nome;
+                row.insertCell(1).textContent = e.marca;
+                row.insertCell(2).textContent = e.quantidade;
+                row.insertCell(3).textContent = e.numeroSerie;
+                row.insertCell(4).textContent = e.marcaEmpresa;
+                row.insertCell(5).textContent = e.situacao;
+                row.insertCell(6).textContent = e.condicao;
+                row.insertCell(7).textContent = e.observacoes;
+                row.insertCell(8).textContent = e.nomeObra;
+
+                // Adiciona botões de editar e remover
+                const actionsCell = row.insertCell(9);
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Editar';
+                editButton.className = 'btn edit';
+                editButton.onclick = () => editarEquipamento(index);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Remover';
+                deleteButton.className = 'btn delete';
+                deleteButton.onclick = () => removerEquipamento(index);
+
+                actionsCell.appendChild(editButton);
+                actionsCell.appendChild(deleteButton);
+            });
+        } else {
+            const row = searchResults.insertRow();
+            row.insertCell(0).textContent = 'Nenhum equipamento encontrado.';
+            row.cellIndex = 1;
+            row.insertCell(1).colSpan = 8;
+        }
+    });
+
+    // Edita o equipamento
+    function editarEquipamento(index) {
+        const e = equipamentos[index];
+        document.getElementById('nome').value = e.nome;
+        document.getElementById('marca').value = e.marca;
+        document.getElementById('quantidade').value = e.quantidade;
+        document.getElementById('numeroSerie').value = e.numeroSerie;
+        document.getElementById('marcaEmpresa').value = e.marcaEmpresa;
+        document.getElementById('situacao').value = e.situacao;
+        document.getElementById('condicao').value = e.condicao;
+        document.getElementById('observacoes').value = e.observacoes;
+        document.getElementById('nomeObra').value = e.nomeObra;
+
+        // Remove o equipamento da lista para atualização
+        equipamentos.splice(index, 1);
+        localStorage.setItem('equipamentos', JSON.stringify(equipamentos));
+
+        // Exibe a seção de cadastro
+        showSection('cadastrar');
+    }
+
+    // Remove o equipamento
+    function removerEquipamento(index) {
+        if (confirm('Tem certeza que deseja remover este equipamento?')) {
+            equipamentos.splice(index, 1);
+            localStorage.setItem('equipamentos', JSON.stringify(equipamentos));
+            searchForm.dispatchEvent(new Event('submit')); // Atualiza a pesquisa
+        }
+    }
+
+    function atualizarLista() {
+        equipmentList.innerHTML = '';
+
+        equipamentos.forEach(e => {
+            const row = equipmentList.insertRow();
+            row.insertCell(0).textContent = e.nome;
+            row.insertCell(1).textContent = e.marca;
+            row.insertCell(2).textContent = e.quantidade;
+            row.insertCell(3).textContent = e.numeroSerie;
+            row.insertCell(4).textContent = e.marcaEmpresa;
+            row.insertCell(5).textContent = e.situacao;
+            row.insertCell(6).textContent = e.condicao;
+            row.insertCell(7).textContent = e.observacoes;
+            row.insertCell(8).textContent = e.nomeObra;
+        });
+    }
+
+    exportButton.addEventListener('click', function() {
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(equipamentos);
+        XLSX.utils.book_append_sheet(wb, ws, 'Equipamentos');
+
+        XLSX.writeFile(wb, 'equipamentos.xlsx');
+    });
+</script>
+
+</body>
+</html>
